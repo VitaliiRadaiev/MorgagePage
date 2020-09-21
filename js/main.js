@@ -304,7 +304,7 @@ function forms(){
 	$.each($('input.phone'), function(index, val) {
 		$(this).attr('type','tel');
 		$(this).focus(function(){
-			$(this).inputmask('+7(999) 999 9999',{clearIncomplete: true,clearMaskOnLostFocus: true,
+			$(this).inputmask('+1(999) 999 9999',{clearIncomplete: true,clearMaskOnLostFocus: true,
 				"onincomplete": function(){maskclear($(this));}
 			});
 			$(this).addClass('focus');
@@ -773,6 +773,63 @@ $(document).ready(function() {
 // === // Проверка, поддержка браузером формата webp ==================================================================
 
 
+// === Конвертация svg картинки в svg код ==================================================================
+$('img.img-svg').each(function(){
+  var $img = $(this);
+  var imgClass = $img.attr('class');
+  var imgURL = $img.attr('src');
+  $.get(imgURL, function(data) {
+    var $svg = $(data).find('svg');
+    if(typeof imgClass !== 'undefined') {
+      $svg = $svg.attr('class', imgClass+' replaced-svg');
+    }
+    $svg = $svg.removeAttr('xmlns:a');
+    if(!$svg.attr('viewBox') && $svg.attr('height') && $svg.attr('width')) {
+      $svg.attr('viewBox', '0 0 ' + $svg.attr('height') + ' ' + $svg.attr('width'))
+    }
+    $img.replaceWith($svg);
+  }, 'xml');
+});
+// === // Конвертация svg картинки в svg код ==================================================================
+
+
+// === Video banner ==================================================================
+ {
+ 	let video = document.querySelector('.home-banner__bg video');
+ 	if(video) {
+ 		let btn = document.querySelector('.home-banner__body');
+
+ 		btn.addEventListener('click', (e) => {
+ 			if(e.target.closest('.top-home-banner__btn > a') || e.target.closest('.bottom-home-banner__item')) {
+
+ 			} else {
+ 				if(video.paused) {
+ 					video.play();
+
+ 				} else {
+ 					video.pause();
+ 				}
+ 			}
+ 		});
+ 	}
+ }
+
+
+function togglePlayPause(video,btn) {
+	if(video.paused) {
+		video.play();
+		btn.firstElementChild.className = 'icon-pause2';
+		btn.firstElementChild.style.marginLeft = '0px';
+
+	} else {
+		video.pause();
+		btn.firstElementChild.className = 'icon-play3';
+		btn.firstElementChild.style.marginLeft = '8px';
+	}
+}
+// === // Video banner ==================================================================
+
+
 
 // === submenu form btn ==================================================================
 {
@@ -964,5 +1021,215 @@ if ($('.accordion').length>0) {
 }
 
 // ==== // accordion =======================================================
+
+
+
+// ==== team correct height =======================================================
+
+{
+	let block = document.querySelector('.list-team');
+	if(block) {
+
+		function transferCardsForSmallWindow() {
+			let arrElem = [];
+
+			for(let item of block.children) {
+				for(let i of item.children) {
+					arrElem.push(i);
+				}
+			}
+
+			let ul = document.createElement('ul');
+			let li = document.createElement('li');
+
+			ul.classList = 'team__list list-team';
+
+			for(let i = 0; i < arrElem.length; i++) {
+				li.append(arrElem[i]);
+			}
+
+			ul.append(li);
+
+			block.replaceWith(ul);
+		}
+
+		function transferCardsForBigWindow() {
+			let arrElem = [];
+
+			for(let item of block.children) {
+				if(item.children.length > 3) {
+					for(let i = 3; i < item.children.length; i++ ) {
+						arrElem.push(item.children[i]);
+					}
+				}
+			}
+
+
+			const transfer = () => {
+				for(let item of block.children) {
+					if(arrElem.length>0 && item.children.length < 3) {
+						if(item.children.length == 0) {
+							for(let i = 0; i < 3; i++) {
+								if(arrElem[i]) {
+									item.append(arrElem[i]);
+								}
+							}
+							arrElem = arrElem.slice(3, arrElem.length);
+						} else if(item.children.length == 1) {
+							for(let i = 0; i < 2; i++) {
+								if(arrElem[i]) {
+									item.append(arrElem[i]);
+								}
+							}
+							arrElem = arrElem.slice(2, arrElem.length);
+						} else if (item.children.length == 2) {
+							for(let i = 0; i < 1; i++) {
+								if(arrElem[i]) {
+									item.append(arrElem[i]);
+								}
+							}
+							arrElem = arrElem.slice(1, arrElem.length);
+						}
+					}
+				}
+			}
+
+			transfer();
+
+			if(arrElem.length>0) {
+				let count = arrElem.length / 3;
+
+				for(let i = 0; i < count; i++) {
+					let li = document.createElement('li');
+					block.append(li);
+				}
+			}
+
+			transfer();
+
+
+			for(let item of block.children) {
+				item.style.minHeight = item.getBoundingClientRect().height + 'px';
+
+				if(item.children.length == 1) {
+					item.classList.add('_one');
+				}
+
+				if(item.children.length == 2) {
+					item.classList.add('_two');
+				}
+
+				let arrHeight = [];
+
+				for(let inItem of item.children) {
+					let textBox = inItem.querySelector('.card-team__position');
+					arrHeight.push(textBox.getBoundingClientRect().height);
+				}
+
+				let maxHeight = Math.max(...arrHeight);
+
+				for(let inItem of item.children) {
+					let textBox = inItem.querySelector('.card-team__position');
+					textBox.style.minHeight = maxHeight + 'px';
+				}
+			}
+		}
+
+
+		if(document.documentElement.clientWidth <= 1264) {
+			transferCardsForSmallWindow();
+
+		} else {
+			transferCardsForBigWindow();
+		}
+
+		// window.addEventListener('resize', () => {
+		// 	if(document.documentElement.clientWidth <= 1264) {
+		// 		transferCardsForSmallWindow();
+		// 	} else if(document.documentElement.clientWidth > 1264) {
+		// 		transferCardsForBigWindow();
+		// 	}
+		// })
+	}
+}
+// ==== // team correct height =======================================================
+
+
+
+// ==== our-loans =======================================================
+{
+	let ourLoans = document.querySelector('.our-loans');
+	if(ourLoans) {
+		document.querySelectorAll('.our-loans__tiggers').forEach((item) => {
+			item.addEventListener('click', function(e) {
+				e.preventDefault();
+				const id = e.target.getAttribute('href').replace('#','');
+
+				document.querySelectorAll('.our-loans__tiggers').forEach((child) => {
+					child.classList.remove('active');
+				});
+
+				document.querySelectorAll('.our-loans__tabs-content').forEach((child) => {
+					child.classList.remove('active');
+				});
+
+				item.classList.add('active');
+				document.getElementById(id).classList.add('active');
+			});
+		});
+	}
+}
+// ==== //our-loans =======================================================
+
+
+
+// ==== process-subbanner-slider =======================================================
+{
+	let aboutUsCards = document.querySelector('.process-subbanner-slider');
+
+	if(aboutUsCards) {
+
+		if(document.documentElement.clientWidth <= 770 ) {
+			(async function() {
+				await aboutUsCards.classList.add('process-subbanner-slider-mobile');
+				await initialLastViewsSlider()
+			})();
+		}
+
+		window.addEventListener('resize', function() {
+			if(document.documentElement.clientWidth <= 770 ) {
+				(async function() {
+					if(!aboutUsCards.classList.contains('process-subbanner-slider-mobile')) {
+						await aboutUsCards.classList.add('process-subbanner-slider-mobile');
+						await initialLastViewsSlider();
+					}
+				})();
+			} 
+
+			if(document.documentElement.clientWidth > 770) {
+
+				(async function() {
+					await $('.process-subbanner-slider-mobile').slick('unslick')
+					await aboutUsCards.classList.remove('process-subbanner-slider-mobile');
+				})();
+			}
+		})
+	}
+
+	function initialLastViewsSlider() {
+
+		$('.process-subbanner-slider-mobile').slick({
+			slidesToScroll: 1,
+			arrows: false,
+			adaptiveHeight: true,
+			centerMode: true,
+			variableWidth: true
+		})
+	}
+}
+// ==== //process-subbanner-slider  =======================================================
+
+
+
 
 });
