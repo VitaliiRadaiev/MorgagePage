@@ -941,7 +941,7 @@ if($('.top-slider-history').length>0) {
 {
 	if($('.list-team__cord-wrap').length>0) {
 		$('.list-team__cord-wrap').click(function(e){
-			if(document.documentElement.clientWidth <= 1264) {
+			if(document.documentElement.clientWidth <= 1023) {
 				$(this).find('.card-team__hover-box').slideToggle(300);
 			}
 			
@@ -1109,7 +1109,7 @@ if ($('.accordion').length>0) {
 
 
 			for(let item of block.children) {
-				item.style.minHeight = item.getBoundingClientRect().height + 'px';
+				item.style.minHeight = item.getBoundingClientRect().height * 0.1 + 'rem';
 
 				if(item.children.length == 1) {
 					item.classList.add('_one');
@@ -1122,34 +1122,41 @@ if ($('.accordion').length>0) {
 				let arrHeight = [];
 
 				for(let inItem of item.children) {
-					let textBox = inItem.querySelector('.card-team__position');
+					let textBox = inItem.querySelector('.card-team__text-box');
 					arrHeight.push(textBox.getBoundingClientRect().height);
 				}
 
 				let maxHeight = Math.max(...arrHeight);
 
 				for(let inItem of item.children) {
-					let textBox = inItem.querySelector('.card-team__position');
-					textBox.style.minHeight = maxHeight + 'px';
+					let textBox = inItem.querySelector('.card-team__text-box');
+					textBox.style.minHeight = maxHeight * 0.1 + 'rem';
 				}
 			}
 		}
 
 
-		if(document.documentElement.clientWidth <= 1264) {
+		if(document.documentElement.clientWidth <= 1023) {
 			transferCardsForSmallWindow();
 
 		} else {
 			transferCardsForBigWindow();
 		}
 
-		// window.addEventListener('resize', () => {
-		// 	if(document.documentElement.clientWidth <= 1264) {
-		// 		transferCardsForSmallWindow();
-		// 	} else if(document.documentElement.clientWidth > 1264) {
-		// 		transferCardsForBigWindow();
-		// 	}
-		// })
+		if(document.documentElement.clientWidth > 1023 && document.documentElement.clientWidth <= 1440) {
+		 	document.querySelector('html').style.fontSize = '7.6px';
+		}
+
+		window.addEventListener('resize', () => {
+			if(document.documentElement.clientWidth > 1023 && document.documentElement.clientWidth <= 1440) {
+				document.querySelector('html').style.fontSize = '7.6px';
+			} else if(document.documentElement.clientWidth > 1440) {
+				document.querySelector('html').style.fontSize = '10px';
+			} else if(document.documentElement.clientWidth < 1234) {
+				document.querySelector('html').style.fontSize = '10px';
+				transferCardsForSmallWindow();
+			}
+		})
 	}
 }
 // ==== // team correct height =======================================================
@@ -1229,7 +1236,127 @@ if ($('.accordion').length>0) {
 }
 // ==== //process-subbanner-slider  =======================================================
 
+let btn = document.querySelectorAll('.our-loans__tiggers').forEach((item) => {
+	item.addEventListener('click', () => {
+		let el = document.getElementById('loan-comparison-calculator');
+		var iframeDoc = el.contentWindow.document;
+	})
+})
 
+
+// ==== services-subbanner adaptive  =======================================================
+{
+	let services = document.querySelector('.services-subbanner-info__body'); 
+		if(services) {
+			let column_1 = services.querySelector('.services-subbanner-info__column_1');
+			let column_2 = services.querySelector('.services-subbanner-info__column_2');
+			let column_3 = services.querySelector('.services-subbanner-info__column_3');
+			let column_4 = services.querySelector('.services-subbanner-info__column_4');
+
+			if(!column_1) {
+				services.classList.add('_disabled-column_1');
+			}
+
+			if(!column_2) {
+				services.classList.add('_disabled-column_2');
+			}
+
+			if(!column_3) {
+				services.classList.add('_disabled-column_3');
+			}
+
+			if(!column_4) {
+				services.classList.add('_disabled-column_4');
+			}
+		}
+	
+}
+// ==== //services-subbanner adaptive   =======================================================
+
+
+// ==== calculator-cards handler   =======================================================
+{
+	let blockCards = document.querySelector('.calculator-cards');
+	if(blockCards) {
+
+		const correctHeight = () => {
+			let cards = blockCards.querySelectorAll('.calculator-cards__item');
+
+			let arrHeight = [];
+
+			for(let item of cards) {
+				let title = item.querySelector('.calculator-cards__title');
+				arrHeight.push(title.getBoundingClientRect().height);
+			}
+			let maxHeight = Math.max(...arrHeight);
+
+
+			for(let item of cards) {
+				let title = item.querySelector('.calculator-cards__title');
+				title.style.minHeight = (maxHeight / 20) + 'em';
+			}
+		}
+
+		correctHeight();
+
+		if(document.documentElement.clientWidth > 1023 && document.documentElement.clientWidth <= 1440) {
+		 	blockCards.style.fontSize = '8px';
+		}
+
+		window.addEventListener('resize', () => {
+			if(document.documentElement.clientWidth > 1023 && document.documentElement.clientWidth <= 1440) {
+				blockCards.style.fontSize = '8px';
+			} else if(document.documentElement.clientWidth > 1440) {
+				blockCards.style.fontSize = '10px';
+			} else if(document.documentElement.clientWidth < 1234) {
+				blockCards.style.fontSize = '10px';
+			}
+		})
+
+	}
+}
+// ====  calculator-cards handler =======================================================
+
+
+// ====  header menu line correct =======================================================
+{
+	let list = document.querySelector('.main-menu__list');
+	if(list) {
+		for(let item of list.children) {
+			let link = item.querySelector('a');
+			let arrText = link.innerText.trim().split(' ');
+
+			if(arrText.length == 3) {
+				if(arrText[0].length > 6 && arrText[1].length > 4 && arrText[2].length > 6) {
+					link.innerHTML = '';
+
+					let span = document.createElement('span');
+					span.innerHTML = `${arrText[0]}<br>${arrText[1]}<br>${arrText[2]}`;
+					let spanHr = document.createElement('span');
+					spanHr.className = 'hover-hr';
+					link.append(span);
+					//link.append(spanHr);
+				}
+			}
+
+			if(arrText.length == 2) {
+				if(arrText[0].length > 6 && arrText[1].length > 4) {
+					link.innerHTML = '';
+
+					let span = document.createElement('span');
+					span.innerHTML = `${arrText[0]}<br>${arrText[1]}`;
+					let spanHr = document.createElement('span');
+					spanHr.className = 'hover-hr';
+					link.append(span);
+					//link.append(spanHr);
+				}
+			}
+
+		}
+	}
+}
+// ====  and header menu line correct =======================================================
 
 
 });
+
